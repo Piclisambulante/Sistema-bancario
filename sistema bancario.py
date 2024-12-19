@@ -191,7 +191,7 @@ def realizar_transferencia(index):
 
 def investimento(index):
     print("1 - Realizar investimento" +
-          "Cancelar investimento")
+          "2 - Cancelar investimento")
     pergunta_investimento = str (input())
     if pergunta_investimento == "1":
         print("Digite o valor do investimento:")
@@ -284,10 +284,4 @@ def exibir_historico():
         print(f"Data/Hora: {transacao['data_hora']}")
         print("-" * 40)
 
-
-registrar_transacao("Depósito", 500.00)
-registrar_transacao("Retirada", 200.00)
-registrar_transacao("Depósito", 300.00)
-
-exibir_historico()
-      
+menu()
