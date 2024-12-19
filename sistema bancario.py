@@ -27,7 +27,8 @@ def menu():
     print("1 - Entrar")
     print("2 - Criar conta")
     print("3 - Entrar como ADM")
-    print("4 - Sair")
+    print("4 - Resumo da conta")
+    print("5 - Sair")
     
     try:
         perguntadeentrada = int(input("Escolha uma opção: "))
@@ -38,6 +39,8 @@ def menu():
         elif perguntadeentrada == 3:
             entrar_ADM()
         elif perguntadeentrada == 4:
+            resumo_conta()
+        elif perguntadeentrada == 5:
             print("Encerrando o programa...")
             exit()
         else:
@@ -190,12 +193,14 @@ def realizar_transferencia(index):
 
 
 def investimento(index):
-    print("1 - Realizar investimento" +
-          "2 - Cancelar investimento")
-    pergunta_investimento = str (input())
+    print("1 - Realizar investimento")
+    print("2 - Cancelar investimento")
+    pergunta_investimento = input()
+    
     if pergunta_investimento == "1":
         print("Digite o valor do investimento:")
         valor_investimento = float(input())
+        
         if valor_investimento > saldos[index]:
             print("Saldo insuficiente.")
             return
@@ -228,36 +233,22 @@ def investimento(index):
         print(f"Investimento de R${valor_investimento:.2f} realizado com sucesso. Valor ao final do prazo: R${valor_final:.2f}.")
 
     elif pergunta_investimento == "2":
-        print ("Digite o valor para retirada:")
-        valor_retirada = float (input())
-        print ("Digite a sua senha para realizar a oparação")
-        senha_cancelarinv = str (input ())
-        
+        print("Digite o valor para retirada:")
+        valor_retirada = float(input())
+        print("Digite a sua senha para realizar a operação:")
+        senha_cancelarinv = input()
+
         if senha_cancelarinv == senha_loggin[index]:
-
-            if valor_final <= investimentos:
-                saldos += investimentos
-
+            if valor_retirada <= sum(inv[3] for inv in investimentos[index]):
+                saldos[index] += valor_retirada
+                print(f"R${valor_retirada:.2f} retirados do investimento com sucesso.")
+            else:
+                print("Saldo insuficiente no investimento para realizar a retirada.")
         else:
-            print ("senha incorreta")
-            return investimento()
-            
-
-
-def resumo_conta(index):
-    print(f"Resumo da Conta:")
-    print(f"Saldo atual: R${saldos[index]:.2f}")
-    if investimentos[index]:
-        print("Investimentos realizados:")
-        for i, inv in enumerate(investimentos[index], start=1):
-            print(f"{i} - Investimento de R${inv[0]:.2f} por {inv[1]} dias. CDI: {inv[2]*100:.0f}%. Valor final: R${inv[3]:.2f}.")
-    else:
-        print("Nenhum investimento realizado.")
+            print("Senha incorreta.")
 
 
 from datetime import datetime
-
-
 
 
 def registrar_transacao(tipo, valor):
@@ -283,5 +274,40 @@ def exibir_historico():
         print(f"Valor: R$ {transacao['valor']:.2f}")
         print(f"Data/Hora: {transacao['data_hora']}")
         print("-" * 40)
+
+def resumo_conta(index):
+    limpar_tela()
+    print(f"--- Resumo da Conta ---")
+    print(f"CPF do usuário: {cpf_loggin[index]}")
+    print(f"Saldo atual: R${saldos[index]:.2f}\n")
+    
+    
+    print("Histórico de Transações:")
+    if historico_transacoes:
+        for transacao in historico_transacoes:
+            if transacao["cpf"] == cpf_loggin[index]:  
+                print(f"- Tipo: {transacao['tipo']}, Valor: R${transacao['valor']:.2f}, Data/Hora: {transacao['data_hora']}")
+    else:
+        print("Nenhuma transação registrada.\n")
+
+    print("\nInvestimentos realizados:")
+    if investimentos[index]:
+        for i, inv in enumerate(investimentos[index], start=1):
+            print(f"{i} - Valor: R${inv[0]:.2f}, Prazo: {inv[1]} dias, CDI: {inv[2]*100:.0f}%, Valor Final: R${inv[3]:.2f}")
+    else:
+        print("Nenhum investimento realizado.\n")
+    
+    print("\nPressione Enter para voltar ao menu do usuário...")
+    input()
+
+def registrar_transacao(tipo, valor, cpf):
+    transacao = {
+        "tipo": tipo,
+        "valor": valor,
+        "data_hora": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "cpf": cpf
+    }
+    historico_transacoes.append(transacao)
+
 
 menu()
